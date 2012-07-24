@@ -502,7 +502,7 @@ do_search_0(Data, A) ->
     Req = #'SearchRequest'{baseObject = A#eldap_search.base,
 			   scope = v_scope(A#eldap_search.scope),
 			   derefAliases = neverDerefAliases,
-			   sizeLimit = 0, % no size limit
+			   sizeLimit = v_size_limit(A#eldap_search.sizeLimit), % no size limit
 			   timeLimit = v_timeout(A#eldap_search.timeout),
 			   typesOnly = v_bool(A#eldap_search.types_only),
 			   filter = v_filter(A#eldap_search.filter),
@@ -525,7 +525,7 @@ collect_search_responses(Data, Req, ID) ->
 collect_search_responses(Data, S, ID, {ok,Msg}, Acc, Ref)
   when is_record(Msg,'LDAPMessage') ->
     case Msg#'LDAPMessage'.protocolOp of
-	{'searchResDone',R} when R#'LDAPResult'.resultCode == success ->
+	{'searchResDone',R} when R#'LDAPResult'.resultCode == success;R#'LDAPResult'.resultCode == sizeLimitExceeded ->
 	    log2(Data, "search reply = searchResDone ~n", []),
 	    {ok,Acc,Ref,Data};
 	{'searchResEntry',R} when is_record(R,'SearchResultEntry') ->
@@ -745,6 +745,9 @@ v_bool(_Bool) -> throw({error,concat(["not Boolean: ",_Bool])}).
 
 v_timeout(I) when is_integer(I), I>=0 -> I;
 v_timeout(_I) -> throw({error,concat(["timeout not positive integer: ",_I])}).
+
+v_size_limit(I) when is_integer(I), I>=0 -> I;
+v_size_limit(_I) -> throw({error, concat(["size limit not positive integer: ", _I])}).
 
 v_attributes(Attrs) ->
     F = fun(A) when is_list(A) -> A;

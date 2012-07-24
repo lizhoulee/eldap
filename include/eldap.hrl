@@ -10,6 +10,7 @@
 	  scope,                 % Search scope
 	  attributes = [],       % Attributes to be returned
 	  types_only = false,    % Return types+values or types
+	  sizeLimit = 0,	 % Return size of search entries
 	  timeout = 0            % Timelimit for search
 	 }).
 
