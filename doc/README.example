@@ -42,3 +42,12 @@ ok
                                {...}|...]}],
                          [["ldap://bluetail.com/CN=Configuration,DC=bluetail,DC=com"]]}}
 8> 
+
+example use erlang RECORD
+rr(eldap).
+Base="dc=bluetail,dc=com".
+Scope=eldap:wholeSubtree().
+Filter=eldap:substrings("uid", [{initial, "to"}]).
+Search=#eldap_search{base=Base, scope=Scope, filter=Filter}.
+Search=#eldap_search{base=Base, scope=Scope, filter=Filter, sizeLimit=10}.
+Search=#eldap_search{base=Base, scope=Scope, filter=Filter, sizeLimit=10, timeout=1000}. 
